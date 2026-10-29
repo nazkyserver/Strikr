@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Combo, SessionConfig, SessionRecord, VoiceGender, WorkoutPhase } from '../types';
+import type { Combo, SessionConfig, SessionRecord, WorkoutPhase } from '../types';
 import { comboVoiceLine, createCombo } from '../lib/combos';
 import { playCue, primeAudio } from '../lib/sound';
 import {
@@ -11,7 +11,7 @@ import {
   warmUpSpeech,
 } from '../lib/speech';
 import { createSessionId } from '../lib/storage';
-import { getIntensity } from '../lib/session';
+import { getIntensity, getSpeechPace } from '../lib/session';
 
 interface Engine {
   phase: WorkoutPhase;
@@ -280,12 +280,16 @@ function advance(
   }
 }
 
-function processEvents(events: EngineEvent[], muted: boolean, voiceGender: VoiceGender) {
+function processEvents(events: EngineEvent[], muted: boolean, config: SessionConfig) {
+  const pace = getSpeechPace(config.speechPace).rate;
   for (const event of events) {
     if (event.type === 'cue') {
       playCue(event.cue);
     } else if (event.type === 'speak' && !muted) {
-      speak(event.text, { rate: event.rate, voiceGender });
+      speak(event.text, {
+        rate: (event.rate ?? 1) * pace,
+        voiceGender: config.voiceGender,
+      });
     }
   }
 }
@@ -315,7 +319,11 @@ export function useWorkout(config: SessionConfig, onFinish: (record: SessionReco
     warmUpSpeech();
     primeAudio();
     if (configRef.current.voice) {
-      speak('Hands up. Get ready.', { rate: 0.95, voiceGender: configRef.current.voiceGender });
+      const pace = getSpeechPace(configRef.current.speechPace).rate;
+      speak('Hands up. Get ready.', {
+        rate: 0.95 * pace,
+        voiceGender: configRef.current.voiceGender,
+      });
     }
 
     let last = performance.now();
@@ -328,7 +336,7 @@ export function useWorkout(config: SessionConfig, onFinish: (record: SessionReco
 
       const events: EngineEvent[] = [];
       advance(engineRef.current, delta, configRef.current, events);
-      processEvents(events, mutedRef.current, configRef.current.voiceGender);
+      processEvents(events, mutedRef.current, configRef.current);
       setSnapshot(snapshotFromEngine(engineRef.current, configRef.current));
 
       const currentPhase = engineRef.current.phase as WorkoutPhase;
@@ -388,7 +396,7 @@ export function useWorkout(config: SessionConfig, onFinish: (record: SessionReco
       configRef.current,
       events,
     );
-    processEvents(events, mutedRef.current, configRef.current.voiceGender);
+    processEvents(events, mutedRef.current, configRef.current);
     setSnapshot(snapshotFromEngine(engineRef.current, configRef.current));
   };
 

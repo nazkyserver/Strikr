@@ -1,4 +1,11 @@
-import type { Difficulty, Intensity, SessionConfig, VoiceGender, Volume } from '../types';
+import type {
+  Difficulty,
+  Intensity,
+  SessionConfig,
+  SpeechPace,
+  VoiceGender,
+  Volume,
+} from '../types';
 
 export interface OptionMeta<T extends string> {
   id: T;
@@ -104,6 +111,30 @@ export const VOICE_GENDER_OPTIONS: Array<OptionMeta<VoiceGender>> = [
   },
 ];
 
+export const SPEECH_PACE_OPTIONS: Array<OptionMeta<SpeechPace> & { rate: number }> = [
+  {
+    id: 'slow',
+    label: 'Slow',
+    shortLabel: '0.85×',
+    rate: 0.85,
+    description: 'More time to hear every punch before the next call.',
+  },
+  {
+    id: 'normal',
+    label: 'Normal',
+    shortLabel: '1.0×',
+    rate: 1,
+    description: 'A natural coaching cadence.',
+  },
+  {
+    id: 'fast',
+    label: 'Fast',
+    shortLabel: '1.15×',
+    rate: 1.15,
+    description: 'Snappier calls for experienced fighters.',
+  },
+];
+
 export const ROUND_LENGTH_OPTIONS = [60, 120, 180, 300, 420, 600];
 export const REST_OPTIONS = [60, 90, 120];
 export const MIN_ROUNDS = 1;
@@ -120,6 +151,7 @@ export const DEFAULT_CONFIG: SessionConfig = {
   rounds: 6,
   voice: true,
   voiceGender: 'female',
+  speechPace: 'normal',
 };
 
 export function getDifficulty(id: Difficulty) {
@@ -136,6 +168,10 @@ export function getVolume(id: Volume) {
 
 export function getVoiceGender(id: VoiceGender) {
   return VOICE_GENDER_OPTIONS.find((option) => option.id === id) ?? VOICE_GENDER_OPTIONS[0];
+}
+
+export function getSpeechPace(id: SpeechPace) {
+  return SPEECH_PACE_OPTIONS.find((option) => option.id === id) ?? SPEECH_PACE_OPTIONS[1];
 }
 
 export function clampRounds(value: number): number {
@@ -199,6 +235,9 @@ export function validateConfig(raw: unknown): SessionConfig {
   const voiceGender = VOICE_GENDER_OPTIONS.some((option) => option.id === candidate.voiceGender)
     ? candidate.voiceGender
     : DEFAULT_CONFIG.voiceGender;
+  const speechPace = SPEECH_PACE_OPTIONS.some((option) => option.id === candidate.speechPace)
+    ? candidate.speechPace
+    : DEFAULT_CONFIG.speechPace;
 
   const roundSeconds =
     typeof candidate.roundSeconds === 'number' &&
@@ -224,5 +263,6 @@ export function validateConfig(raw: unknown): SessionConfig {
         : DEFAULT_CONFIG.rounds,
     voice: typeof candidate.voice === 'boolean' ? candidate.voice : true,
     voiceGender: voiceGender as VoiceGender,
+    speechPace: speechPace as SpeechPace,
   };
 }

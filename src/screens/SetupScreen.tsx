@@ -28,6 +28,7 @@ import {
   MIN_ROUNDS,
   REST_OPTIONS,
   ROUND_LENGTH_OPTIONS,
+  SPEECH_PACE_OPTIONS,
   VOICE_GENDER_OPTIONS,
   VOLUME_OPTIONS,
   clampRoundSeconds,
@@ -37,6 +38,7 @@ import {
   formatConfigClock,
   getDifficulty,
   getIntensity,
+  getSpeechPace,
   getVoiceGender,
   getVolume,
 } from '../lib/session';
@@ -75,6 +77,7 @@ export function SetupScreen({ config, onChange, onStart }: SetupScreenProps) {
   const intensity = getIntensity(config.intensity);
   const volume = getVolume(config.volume);
   const voiceGender = getVoiceGender(config.voiceGender);
+  const speechPace = getSpeechPace(config.speechPace);
   const customActive = customOpen || !ROUND_LENGTH_OPTIONS.includes(config.roundSeconds);
 
   const update = <K extends keyof SessionConfig>(key: K, value: SessionConfig[K]) => {
@@ -99,7 +102,7 @@ export function SetupScreen({ config, onChange, onStart }: SetupScreenProps) {
 
   const handleVoicePreview = () => {
     warmUpSpeech();
-    previewVoice(config.voiceGender);
+    previewVoice(config.voiceGender, 0.96 * speechPace.rate);
   };
 
   return (
@@ -419,8 +422,8 @@ export function SetupScreen({ config, onChange, onStart }: SetupScreenProps) {
                       ? `English (US) · ${voiceGender.label} · Live calls`
                       : 'Voice muted'}
                   </span>
-                  <div className="voice-gender" role="group" aria-label="Coach voice">
-                    <span className="voice-gender-label">Coach voice</span>
+                  <div className="voice-choice" role="group" aria-label="Coach voice">
+                    <span className="voice-choice-label">Coach voice</span>
                     {VOICE_GENDER_OPTIONS.map((option) => {
                       const Icon = VOICE_GENDER_ICONS[option.id];
                       const selected = config.voiceGender === option.id;
@@ -428,12 +431,30 @@ export function SetupScreen({ config, onChange, onStart }: SetupScreenProps) {
                         <button
                           type="button"
                           key={option.id}
-                          className={`voice-gender-option${selected ? ' is-selected' : ''}`}
+                          className={`voice-choice-option${selected ? ' is-selected' : ''}`}
                           onClick={() => update('voiceGender', option.id)}
                           aria-pressed={selected}
                           title={option.description}
                         >
                           <Icon size={13} weight={selected ? 'fill' : 'regular'} />
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="voice-choice" role="group" aria-label="Speech pace">
+                    <span className="voice-choice-label">Speech pace</span>
+                    {SPEECH_PACE_OPTIONS.map((option) => {
+                      const selected = config.speechPace === option.id;
+                      return (
+                        <button
+                          type="button"
+                          key={option.id}
+                          className={`voice-choice-option${selected ? ' is-selected' : ''}`}
+                          onClick={() => update('speechPace', option.id)}
+                          aria-pressed={selected}
+                          title={`${option.description} (${option.shortLabel})`}
+                        >
                           {option.label}
                         </button>
                       );

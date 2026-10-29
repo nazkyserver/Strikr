@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import type { Intensity, VoiceGender } from '../types';
+import type { VoiceGender } from '../types';
 
 const isNative = Capacitor.isNativePlatform();
 
@@ -66,12 +66,6 @@ const MALE_VOICE_CUES = [
   'lee',
   'google uk english male',
 ];
-
-export const SPEECH_RATE: Record<Intensity, number> = {
-  light: 0.92,
-  medium: 1.02,
-  hard: 1.14,
-};
 
 export function isSpeechSupported(): boolean {
   if (isNative) return true;
@@ -215,14 +209,13 @@ async function stopNativeSpeech() {
 export function speak(
   text: string,
   options: {
-    intensity?: Intensity;
     rate?: number;
     interrupt?: boolean;
     voiceGender?: VoiceGender;
   } = {},
 ) {
   if (!isSpeechSupported()) return;
-  const rate = options.rate ?? (options.intensity ? SPEECH_RATE[options.intensity] : 1);
+  const rate = options.rate ?? 1;
   const gender = options.voiceGender ?? 'female';
 
   if (isNative) {
@@ -251,9 +244,9 @@ export function speak(
   synth.speak(utterance);
 }
 
-export function previewVoice(gender: VoiceGender = 'female') {
+export function previewVoice(gender: VoiceGender = 'female', rate = 0.96) {
   speak('Jab, cross, lead hook, body rip. Keep your hands up.', {
-    rate: 0.96,
+    rate,
     voiceGender: gender,
   });
 }

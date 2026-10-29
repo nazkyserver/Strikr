@@ -712,14 +712,14 @@
   text-transform: uppercase;
 }
 
-.voice-gender {
+.voice-choice {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
-.voice-gender-label {
+.voice-choice-label {
   margin-right: 2px;
   color: var(--faint);
   font-family: var(--font-mono);
@@ -728,7 +728,7 @@
   text-transform: uppercase;
 }
 
-.voice-gender-option {
+.voice-choice-option {
   display: inline-flex;
   height: 24px;
   align-items: center;
@@ -747,18 +747,18 @@
     color 160ms ease;
 }
 
-.voice-gender-option:hover {
+.voice-choice-option:hover {
   border-color: var(--line-strong);
   color: var(--text);
 }
 
-.voice-gender-option.is-selected {
+.voice-choice-option.is-selected {
   border-color: rgba(216, 255, 62, 0.38);
   background: var(--accent-soft);
   color: var(--accent);
 }
 
-.voice-gender-option svg {
+.voice-choice-option svg {
   opacity: 0.9;
 }
 

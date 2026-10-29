@@ -2,6 +2,7 @@ export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 export type Intensity = 'light' | 'medium' | 'hard';
 export type Volume = 'light' | 'medium' | 'hard';
 export type VoiceGender = 'female' | 'male';
+export type SpeechPace = 'slow' | 'normal' | 'fast';
 export type AppView = 'home' | 'setup' | 'stats' | 'workout' | 'summary';
 export type WorkoutPhase = 'ready' | 'work' | 'rest' | 'complete';
 
@@ -14,6 +15,7 @@ export interface SessionConfig {
   rounds: number;
   voice: boolean;
   voiceGender: VoiceGender;
+  speechPace: SpeechPace;
 }
 
 export interface ComboToken {
