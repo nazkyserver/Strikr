@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Strikr</string>
+    <string name="title_activity_main">Strikr</string>
+    <string name="package_name">com.strikr.app</string>
+    <string name="custom_url_scheme">com.strikr.app</string>
+</resources>
