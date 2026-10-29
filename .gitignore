@@ -32,3 +32,6 @@ android/keystore.properties
 android/*.keystore
 android/*.jks
 release
+
+# Local video/lab artifacts
+brag-output/
